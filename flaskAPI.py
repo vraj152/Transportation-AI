@@ -12,7 +12,7 @@ import shutil
 app = Flask(__name__)
 CORS(app)
 
-outputfile_path = "OutputImages"
+outputfile_path = "static/OutputImages"
 inputfile_path = "InputImages"
 
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -29,16 +29,25 @@ def object_detection():
     preprocess_directory(inputfile_path)
     
     images = []
+    height_needed = 0
     
     for file in input_files:
         filename = secure_filename(file.filename) # save file 
         filepath = os.path.join(inputfile_path, filename);
         file.save(filepath)
         
-        images.append(cv2.imread(filepath)[..., ::-1])
+        curr_img = cv2.imread(filepath)[..., ::-1]
+        
+        height_needed = max(height_needed, curr_img.shape[0])
+        images.append(curr_img)
     
     meta_data = run_pretrained_model(images)
-    res = prepare_response(meta_data)
+    ls = prepare_response(meta_data)
+    
+    res = {
+        "height_needed" : height_needed + 50,
+        "ls" : ls
+    }
     
     return json.dumps(res)
 

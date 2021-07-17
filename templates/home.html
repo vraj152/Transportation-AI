@@ -2,6 +2,13 @@
 <html>
 	<head>
 		<title>Upload Files</title>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<style>
+			.mySlides {display:none}
+		</style>
+		
 		<script type="text/javascript">
 			function server_call(){
 				var formData = new FormData();
@@ -30,6 +37,8 @@
 							console.log("RESPONSE RECEIVED!");
 							var data = JSON.parse(xhttp.responseText);
 							console.log(data);
+							
+							display_output(data);
 						}else{
 							alert("Error Occured! Check logs");
 							console.error("Server error: ", xhttp.statusText);
@@ -43,11 +52,121 @@
 				
 				xhttp.send(formData);
 			}
+			
+			function display_output(server_data){
+				var data = server_data["ls"];
+				var img_container = document.getElementById("image_container");
+				var scroller_container = document.getElementById("scroller_container");
+				
+				console.log(data);
+				
+				img_container.innerHTML = "";
+				scroller_container.innerHTML = "";
+
+				for(var x = 0; x < data.length; x++){
+					var div = document.createElement("div");
+					
+					var div1 = document.createElement("div");
+					div1.setAttribute("style", "float:left");
+					
+					var div2 = document.createElement("div");
+					//div2.setAttribute("style", "float:left");
+					
+					var img = document.createElement("img");
+					img.setAttribute("class", "mySlides");
+					img.setAttribute("src", data[x]["path"]);
+					img.setAttribute("style", "width:100%");
+					
+					var table = document.createElement('table');
+					for (var i = 1; i < 4; i++){
+						var tr = document.createElement('tr');   
+
+						var td1 = document.createElement('td');
+						var td2 = document.createElement('td');
+
+						var text1 = document.createTextNode('Text1');
+						var text2 = document.createTextNode('Text2');
+
+						td1.appendChild(text1);
+						td2.appendChild(text2);
+						tr.appendChild(td1);
+						tr.appendChild(td2);
+
+						table.appendChild(tr);
+					}
+					
+					div1.appendChild(img);
+					div2.appendChild(table);
+					
+					div.appendChild(div1);
+					div.appendChild(div2);
+					
+					var button = document.createElement("button");
+					button.setAttribute("class", "w3-button demo");
+					button.setAttribute("onclick", "currentDiv(" + (x+1).toString() +")");
+					
+					button.appendChild(document.createTextNode((x+1).toString()));
+					
+					img_container.appendChild(div);
+					scroller_container.appendChild(button);
+				}
+			
+				var output_block = document.getElementById("output_image_div");
+				//output_block.style.height = parseInt(server_data["height_needed"]);
+				output_block.style.display = 'inherit';
+			}
 		</script>
 	</head>
 	<body>
-		<h2>Select file(s) to upload</h2>
-		Select Images: <input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
-		<input type="button" value="Submit" onclick="server_call()">
+		<center>
+			<h2>Select file(s) to upload</h2>
+			<input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
+			<input type="button" value="Submit" onclick="server_call()">
+		</center>
+		<div id = "output_image_div" style="display:none">
+			<div id="image_container" class="w3-content" style="max-width:350px">
+			</div>
+
+			<div class="w3-center">
+				<div class="w3-section">
+					<button class="w3-button w3-light-grey" onclick="plusDivs(-1)">❮ Prev</button>
+					<button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next ❯</button>
+				</div>
+				<div id="scroller_container">
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			var slideIndex = 1;
+			showDivs(slideIndex);
+
+			function plusDivs(n) {
+			  showDivs(slideIndex += n);
+			}
+
+			function currentDiv(n) {
+			  showDivs(slideIndex = n);
+			}
+
+			function showDivs(n) {
+			  var i;
+			  var x = document.getElementsByClassName("mySlides");
+			  var dots = document.getElementsByClassName("demo");
+			  if (n > x.length) {slideIndex = 1}
+			  if (n < 1) {slideIndex = x.length}
+			  for (i = 0; i < x.length; i++) {
+				x[i].style.display = "none";  
+			  }
+			  for (i = 0; i < dots.length; i++) {
+				dots[i].className = dots[i].className.replace(" w3-red", "");
+			  }
+			  x[slideIndex-1].style.display = "block";  
+			  dots[slideIndex-1].className += " w3-red";
+			}
+		</script>
+
+		
+		
 	</body>
 </html>
