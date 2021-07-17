@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Upload Files</title>
+		<script type="text/javascript">
+			function server_call(){
+				var formData = new FormData();
+				var total = document.getElementById('images').files.length;
+				
+				for (var x = 0; x < total; x++) {
+					formData.append("files[]", document.getElementById('images').files[x]);
+				}
+				
+				sendDataToServer(formData);
+			}
+			function sendDataToServer(formData){
+				console.log(formData);
+			
+				var SERVER_URL = "http://localhost:5000/";
+				var REST_API = SERVER_URL + "objectDetect";
+				
+				var xhttp = new XMLHttpRequest();
+				xhttp.open("POST", REST_API, true);
+				
+				xhttp.onload = function (e){
+					if (xhttp.readyState === 4)
+					{
+						if (xhttp.status === 200)
+						{
+							console.log("RESPONSE RECEIVED!");
+							var data = JSON.parse(xhttp.responseText);
+							console.log(data);
+						}else{
+							alert("Error Occured! Check logs");
+							console.error("Server error: ", xhttp.statusText);
+						}
+					}
+				};
+				xhttp.onerror = function (e)
+				{
+					console.error("Error connecting to: ", SERVER_URL);
+				};
+				
+				xhttp.send(formData);
+			}
+		</script>
+	</head>
+	<body>
+		<h2>Select file(s) to upload</h2>
+		Select Images: <input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
+		<input type="button" value="Submit" onclick="server_call()">
+	</body>
+</html>
