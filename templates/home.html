@@ -3,11 +3,16 @@
 	<head>
 		<title>Upload Files</title>
 		
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-		<style>
-			.mySlides {display:none}
-		</style>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+		<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/css/swiper.min.css'>
+		<link rel="stylesheet" href="static/style.css">
+		<link rel="stylesheet" href="https://bootswatch.com/4/cyborg/bootstrap.min.css">
+		
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
 		
 		<script type="text/javascript">
 			function server_call(){
@@ -55,118 +60,162 @@
 			
 			function display_output(server_data){
 				var data = server_data["ls"];
-				var img_container = document.getElementById("image_container");
-				var scroller_container = document.getElementById("scroller_container");
 				
-				console.log(data);
+				var most_outer_div = document.getElementById("main_blog_div");
+				var inner_div = document.getElementById("sub_blog_div");
+				var slider_div = document.getElementById("slider_div");
 				
-				img_container.innerHTML = "";
-				scroller_container.innerHTML = "";
-
+				inner_div.innerHTML = "";
+				slider_div.innerHTML = "";
+				
 				for(var x = 0; x < data.length; x++){
-					var div = document.createElement("div");
+					var item_div = document.createElement("div");
 					
-					var div1 = document.createElement("div");
-					div1.setAttribute("style", "float:left");
-					
-					var div2 = document.createElement("div");
-					//div2.setAttribute("style", "float:left");
-					
-					var img = document.createElement("img");
-					img.setAttribute("class", "mySlides");
-					img.setAttribute("src", data[x]["path"]);
-					img.setAttribute("style", "width:100%");
-					
-					var table = document.createElement('table');
-					for (var i = 1; i < 4; i++){
-						var tr = document.createElement('tr');   
-
-						var td1 = document.createElement('td');
-						var td2 = document.createElement('td');
-
-						var text1 = document.createTextNode('Text1');
-						var text2 = document.createTextNode('Text2');
-
-						td1.appendChild(text1);
-						td2.appendChild(text2);
-						tr.appendChild(td1);
-						tr.appendChild(td2);
-
-						table.appendChild(tr);
+					if(x == 0){
+						if(data.length == 1){
+							item_div.setAttribute("class", "blog-slider__item swiper-slide swiper-slide-active swiper-slide-next swiper-slide-prev");
+						}else{
+							item_div.setAttribute("class", "blog-slider__item swiper-slide swiper-slide-active");
+						}
+						
+						item_div.setAttribute("style","width: 750px ; opacity: 1; transform: translate3d(" + ((-750) * x).toString() + "px, 0px, 0px); transition-duration: 0ms;");
+					}else{
+						if(x == data.length - 1){
+							item_div.setAttribute("class", "blog-slider__item swiper-slide swiper-slide-prev");
+						}else{
+							item_div.setAttribute("class", "blog-slider__item swiper-slide swiper-slide-next");
+						}
+						item_div.setAttribute("style","width: 750px ; opacity: 0; transform: translate3d(" + ((-750) * x).toString() + "px, 0px, 0px); transition-duration: 0ms;");
 					}
 					
-					div1.appendChild(img);
-					div2.appendChild(table);
 					
-					div.appendChild(div1);
-					div.appendChild(div2);
+					var image_div = document.createElement("div");
+					image_div.setAttribute("class", "blog-slider__img");
 					
-					var button = document.createElement("button");
-					button.setAttribute("class", "w3-button demo");
-					button.setAttribute("onclick", "currentDiv(" + (x+1).toString() +")");
+					var img = document.createElement("img");
+					img.setAttribute("src", data[x]["path"]);
 					
-					button.appendChild(document.createTextNode((x+1).toString()));
+					image_div.appendChild(img);
 					
-					img_container.appendChild(div);
-					scroller_container.appendChild(button);
+					//<a href="#" class="blog-slider__button">READ MORE</a>
+					//<a data-target="#myModal" data-toggle="modal" class="MainNavText" id="MainNavHelp" href="#myModal">HELP</a>
+					//<span class="swiper-pagination-bullet swiper-pagination-bullet-active" tabindex="0" role="button" aria-label="Go to slide 3"></span>
+					
+					var a_tag = document.createElement("a");
+					a_tag.setAttribute("data-target", "#myModal");
+					a_tag.setAttribute("data-toggle", "modal");
+					a_tag.setAttribute("href", "#myModal");
+					a_tag.setAttribute("class", "blog-slider__button");
+					a_tag.appendChild(document.createTextNode("READ MORE"));
+					
+					item_div.appendChild(image_div);
+					item_div.appendChild(a_tag);
+					
+					var span = document.createElement("span");
+					
+					if(x == 0){
+						span.setAttribute("class", "swiper-pagination-bullet swiper-pagination-bullet-active");
+					}else{
+						span.setAttribute("class", "swiper-pagination-bullet");
+					}
+					
+					span.setAttribute("tabindex", "0");
+					span.setAttribute("role", "button");
+					span.setAttribute("aria-label", "Go to slide " + (x+1).toString());
+					
+					slider_div.appendChild(span);
+					inner_div.appendChild(item_div);
 				}
+				var swiper = new Swiper('.blog-slider', {
+					  spaceBetween: 30,
+					  effect: 'fade',
+					  loop: true,
+					  mousewheel: {
+						invert: false,
+					  },
+					  // autoHeight: true,
+					  pagination: {
+						el: '.blog-slider__pagination',
+						clickable: true,
+					  },
+					  obeserver : true,
+					  observerParents : true,
+					  preventClicks: false,
+					  preventClicksPropagation: false
+				});
+				most_outer_div.style.display = 'inherit';
+			}
 			
-				var output_block = document.getElementById("output_image_div");
-				//output_block.style.height = parseInt(server_data["height_needed"]);
-				output_block.style.display = 'inherit';
+			function process_stat(){
+				console.log("CLICKED!");
+				var button = document.createElement("button");
+				button.setAttribute("data-toggle", "modal");
+				button.setAttribute("data-target", "#myModal");
+				console.log(button);
+				button.click();
 			}
 		</script>
 	</head>
 	<body>
-		<center>
-			<h2>Select file(s) to upload</h2>
-			<input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
-			<input type="button" value="Submit" onclick="server_call()">
-		</center>
-		<div id = "output_image_div" style="display:none">
-			<div id="image_container" class="w3-content" style="max-width:350px">
+		<div>
+			<center>
+				<h2>Select file(s) to upload</h2>
+				<input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
+				<input type="button" value="Submit" onclick="server_call()">
+			</center>
+		</div>
+		<div class="blog-slider" id="main_blog_div" style="display:none">
+			<div class="blog-slider__wrp swiper-wrapper" id="sub_blog_div" >
 			</div>
+			<div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets" id="slider_div">
+			</div>
+		</div>
+			
+		<div class="modal" id="myModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Modal Heading</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
 
-			<div class="w3-center">
-				<div class="w3-section">
-					<button class="w3-button w3-light-grey" onclick="plusDivs(-1)">❮ Prev</button>
-					<button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next ❯</button>
-				</div>
-				<div id="scroller_container">
+					<div class="modal-body">
+						<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Firstname</th>
+								<th>Lastname</th>
+								<th>Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>John</td>
+								<td>Doe</td>
+								<td>john@example.com</td>
+							</tr>	
+							<tr>
+								<td>Mary</td>
+								<td>Moe</td>
+								<td>mary@example.com</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>
 		
-		<script>
-			var slideIndex = 1;
-			showDivs(slideIndex);
-
-			function plusDivs(n) {
-			  showDivs(slideIndex += n);
-			}
-
-			function currentDiv(n) {
-			  showDivs(slideIndex = n);
-			}
-
-			function showDivs(n) {
-			  var i;
-			  var x = document.getElementsByClassName("mySlides");
-			  var dots = document.getElementsByClassName("demo");
-			  if (n > x.length) {slideIndex = 1}
-			  if (n < 1) {slideIndex = x.length}
-			  for (i = 0; i < x.length; i++) {
-				x[i].style.display = "none";  
-			  }
-			  for (i = 0; i < dots.length; i++) {
-				dots[i].className = dots[i].className.replace(" w3-red", "");
-			  }
-			  x[slideIndex-1].style.display = "block";  
-			  dots[slideIndex-1].className += " w3-red";
-			}
-		</script>
-
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+		<script  src="static/script.js"></script>
 		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		
 	</body>
 </html>
