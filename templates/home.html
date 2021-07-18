@@ -20,6 +20,11 @@
 				var formData = new FormData();
 				var total = document.getElementById('images').files.length;
 				
+				if(total == 0){
+					alert("At least select one image for object detection!");
+					return false;
+				}
+				
 				for (var x = 0; x < total; x++) {
 					formData.append("files[]", document.getElementById('images').files[x]);
 				}
@@ -249,7 +254,7 @@
 			<div style="padding-bottom:30px">
 				<h2>Select file(s) to upload</h2>
 				<input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
-				<input type="button" value="Submit" onclick="server_call()">
+				<input type="button" value="Submit" onclick="return server_call()">
 			</div>
 		</center>
 		

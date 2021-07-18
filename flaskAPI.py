@@ -15,11 +15,46 @@ CORS(app)
 outputfile_path = "static/OutputImages"
 inputfile_path = "InputImages"
 
+"""
+Load the model before server gets launched.
+This will make the subsequent requests to the server faster.
+
+Model's being used: Yolov5 (https://github.com/ultralytics/yolov5)
+"""
+
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+
+
+"""
+Endpoint: Whenever the application will be launched, this endpoint will
+server the request. It will render "home.html"
+
+Request Type: GET
+
+"""
 
 @app.route('/', methods=['GET'])
 def home():
     return render_template("home.html")
+
+
+"""
+Endpoint -- "objectDetect"
+Request type: POST
+
+This method will accept the list of images uploaded by user and perform
+object detection on them. Will return the appropriate JSON response to 
+client.
+
+Steps:
+    1. Delete if exists - Input image directory
+    2. Delete if exists - Output image directory
+    3. Will iterate through list of files and store cv2 objects of each
+       files in array.
+    4. Run pretrained model on these images.
+    5. Prepare the appropriate response which will be sent to client.
+    6. Return response.
+"""
 
 @app.route('/objectDetect', methods=['POST'])
 def object_detection():
@@ -44,12 +79,23 @@ def object_detection():
     meta_data = run_pretrained_model(images)
     ls = prepare_response(meta_data)
     
+    print(ls)
+    
     res = {
         "height_needed" : height_needed + 50,
         "ls" : ls
     }
     
     return json.dumps(res)
+
+
+"""
+Helper function: This function will check if directory exists. And if it
+    does, it will delete it.
+
+Accepts:
+    Path : String - which specifies the path of the directory
+"""
 
 def preprocess_directory(path):
     if os.path.exists(path) and os.path.isdir(path):
@@ -58,12 +104,23 @@ def preprocess_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+"""
+Helper function: This function will run pretrained model on all the images.
+    And will save the processed images in output image directory.
+
+Accepts:
+    img_arr : Array of cv2 objects
+    
+Returns:
+    List of dictionary of results produced by Yolov5.
+"""
+
 def run_pretrained_model(img_arr):
     responses = []
     
     results = model(img_arr, size=640)  # includes NMS
 
-    results.print() 
+    #results.print() 
     results.save(save_dir = outputfile_path)
     
     for i in range(len(img_arr)):
@@ -71,6 +128,31 @@ def run_pretrained_model(img_arr):
         
     return responses
     
+
+"""
+Helper function: This function will prepare the response which will be later
+    sent to client.
+
+Accepts:
+    data = list of dictionaries 
+
+Returns:
+    res = List of dictionaries with only the values which will be rendered
+    on frontend.
+    
+Sample output:
+    [{
+      'path': 'static/OutputImages/image0.jpg', 
+      'stats': {
+             'person': 13, 
+             'handbag': 1
+        }
+   }]
+    
+    where path specifies the path of output image
+    stats specifies the frequency of each identified objects.
+    
+"""
 def prepare_response(data):
     res = []
     
@@ -87,6 +169,15 @@ def prepare_response(data):
         res.append(curr)
     
     return res
+
+"""
+Helper function: This function will accept the dictionary of all the objects
+    identified by the model. It will return the frequency map of this 
+    dictionary.
+    
+Accepts: Dictionary
+Returns: Refined dictionary.
+"""
 
 def count_cat(dic):
     temp = {}
