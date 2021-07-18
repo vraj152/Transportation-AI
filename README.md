@@ -6,6 +6,9 @@
 * Submission:
   * In the web-app you can upload single/ multiple images and server will perform object detection and will return the image with bounding boxes.
   * You can also see the detailed statastics - about objects and their frequencies in the given image.
+  * **Output:** 
+       * Output of the given images can be found in [here](https://github.com/vraj152/Transportation-AI/tree/master/static/OutputImages)
+       * Video of the output can be found [here](https://github.com/vraj152/Transportation-AI/tree/master/output)
 * Tech stack used:
   * Backend: Flask
     * Pretrained model used: [Yolov5](https://github.com/ultralytics/yolov5)
