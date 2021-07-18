@@ -76,7 +76,12 @@ def prepare_response(data):
     
     for ind, x in enumerate(data):
         curr = {}
-        curr["path"] = outputfile_path + "/image" + str(ind) + ".jpg"
+        
+        temp = outputfile_path + "/image" + str(ind) + ".jpg"
+        resized = cv2.resize(cv2.imread(temp), (300, 270))
+        cv2.imwrite(temp, resized)
+
+        curr["path"] = temp
         curr["stats"] = count_cat(x["name"])
         
         res.append(curr)

@@ -94,19 +94,16 @@
 					
 					var img = document.createElement("img");
 					img.setAttribute("src", data[x]["path"]);
-					
 					image_div.appendChild(img);
 					
-					//<a href="#" class="blog-slider__button">READ MORE</a>
-					//<a data-target="#myModal" data-toggle="modal" class="MainNavText" id="MainNavHelp" href="#myModal">HELP</a>
-					//<span class="swiper-pagination-bullet swiper-pagination-bullet-active" tabindex="0" role="button" aria-label="Go to slide 3"></span>
+					process_stat(data[x]["stats"], "myModal" + x.toString());
 					
 					var a_tag = document.createElement("a");
-					a_tag.setAttribute("data-target", "#myModal");
+					a_tag.setAttribute("data-target", "#myModal" + x.toString());
 					a_tag.setAttribute("data-toggle", "modal");
-					a_tag.setAttribute("href", "#myModal");
+					a_tag.setAttribute("href", "#myModal" + x.toString());
 					a_tag.setAttribute("class", "blog-slider__button");
-					a_tag.appendChild(document.createTextNode("READ MORE"));
+					a_tag.appendChild(document.createTextNode("VIEW DETAILED STATISTICS"));
 					
 					item_div.appendChild(image_div);
 					item_div.appendChild(a_tag);
@@ -146,70 +143,122 @@
 				most_outer_div.style.display = 'inherit';
 			}
 			
-			function process_stat(){
-				console.log("CLICKED!");
+			function process_stat(dic, id){
+				var main_modal = document.createElement("div");
+				main_modal.setAttribute("id", id);
+				main_modal.setAttribute("class", "modal");
+				
+				var modal_dialog = document.createElement("div");
+				modal_dialog.setAttribute("class", "modal-dialog");
+				
+				var modal_content = document.createElement("div");
+				modal_content.setAttribute("class", "modal-content");
+				
+				////
+				
+				var modal_header = document.createElement("div");
+				modal_header.setAttribute("class", "modal-header");
+				
+				var h4 = document.createElement("h4");
+				h4.setAttribute("class", "modal-title");
+				h4.appendChild(document.createTextNode("Object Statistics"));
+				
 				var button = document.createElement("button");
-				button.setAttribute("data-toggle", "modal");
-				button.setAttribute("data-target", "#myModal");
-				console.log(button);
-				button.click();
+				button.setAttribute("type", "button");
+				button.setAttribute("class", "close");
+				button.setAttribute("data-dismiss", "modal");
+				button.innerHTML = "&times;";
+				
+				modal_header.appendChild(h4);
+				modal_header.appendChild(button);
+				
+				////
+				
+				var modal_body = document.createElement("div");
+				modal_body.setAttribute("class", "modal-body");
+				
+				var table = document.createElement("table");
+				table.setAttribute("class", "table table-striped");
+				
+				var thead = document.createElement("thead");
+				
+				var thead_tr = document.createElement("tr");
+				
+				var thead_td = document.createElement("td");
+				var thead_td1 = document.createElement("td");
+				thead_td.appendChild(document.createTextNode("Object"));
+				thead_td1.appendChild(document.createTextNode("Count"));
+				
+				thead_tr.appendChild(thead_td);
+				thead_tr.appendChild(thead_td1);
+				
+				thead.appendChild(thead_tr);
+				
+				var tbody = document.createElement("tbody");
+				
+				for(var i in dic){
+					var tbody_tr = document.createElement("tr");
+					
+					var tbody_td = document.createElement("td");
+					var tbody_td1 = document.createElement("td");
+					
+					tbody_td.appendChild(document.createTextNode(i));
+					tbody_td1.appendChild(document.createTextNode(dic[i]));
+					
+					tbody_tr.appendChild(tbody_td);
+					tbody_tr.appendChild(tbody_td1);
+					
+					tbody.appendChild(tbody_tr);
+				}
+				
+				table.appendChild(thead);
+				table.appendChild(tbody);
+				
+				modal_body.appendChild(table);
+				
+				////
+				
+				var modal_footer = document.createElement("div");
+				modal_footer.setAttribute("class", "modal-footer");
+				
+				var button2 = document.createElement("button");
+				button2.setAttribute("type", "button");
+				button2.setAttribute("class", "btn btn-danger");
+				button2.setAttribute("data-dismiss", "modal");
+				button2.appendChild(document.createTextNode("Close"));
+				
+				modal_footer.appendChild(button2);
+				
+				////
+				
+				modal_content.appendChild(modal_header);
+				modal_content.appendChild(modal_body);
+				modal_content.appendChild(modal_footer);
+				
+				modal_dialog.appendChild(modal_content);
+				main_modal.appendChild(modal_dialog);
+				
+				document.body.appendChild(main_modal);
+				main_modal.style.display = "none";
 			}
 		</script>
 	</head>
 	<body>
-		<div>
-			<center>
+		<center>
+			<div style="padding-bottom:30px">
 				<h2>Select file(s) to upload</h2>
 				<input type="file" name="files[]" id="images" multiple="true" autocomplete="off" required>
 				<input type="button" value="Submit" onclick="server_call()">
-			</center>
-		</div>
-		<div class="blog-slider" id="main_blog_div" style="display:none">
+			</div>
+		</center>
+		
+		<div class="blog-slider" id="main_blog_div" style="display:none;" >
 			<div class="blog-slider__wrp swiper-wrapper" id="sub_blog_div" >
 			</div>
 			<div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets" id="slider_div">
 			</div>
 		</div>
 			
-		<div class="modal" id="myModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">Modal Heading</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
-
-					<div class="modal-body">
-						<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Firstname</th>
-								<th>Lastname</th>
-								<th>Email</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>John</td>
-								<td>Doe</td>
-								<td>john@example.com</td>
-							</tr>	
-							<tr>
-								<td>Mary</td>
-								<td>Moe</td>
-								<td>mary@example.com</td>
-							</tr>
-						</tbody>
-						</table>
-					</div>
-					
-					<div class="modal-footer">
-						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
 		<script  src="static/script.js"></script>
