@@ -27,7 +27,7 @@ model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
 """
 Endpoint: Whenever the application will be launched, this endpoint will
-server the request. It will render "home.html"
+serve the request. It will render "home.html"
 
 Request Type: GET
 
